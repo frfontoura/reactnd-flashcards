@@ -1,9 +1,33 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
+import { FontAwesome } from '@expo/vector-icons'
+import { connect } from "react-redux"
+import { bindActionCreators } from "redux"
 
-import { blue, white } from '../../utils/colors'
+import { blue, white, red } from '../../utils/colors'
+import { Creators as DeckActions } from '../../store/ducks/deck'
+import { removeEntry } from '../../utils/api'
 
-export default class NewDeck extends Component {
+class DeckDetail extends Component {
+
+    confirmDelete = () => {
+        Alert.alert(
+            'Delete Deck',
+            'Are you sure you want to delete the deck?',
+            [
+              {text: 'Cancel', style: 'cancel'},
+              {text: 'OK', onPress: this.deleteDeck },
+            ],
+            { cancelable: true }
+          )
+    }
+
+    deleteDeck = () => {
+        const { deck } = this.props.navigation.state.params
+        this.props.deleteDeck(deck.title)
+        this.props.navigation.navigate('DeckList')
+        removeEntry(deck.title)
+    }
 
     render() {
         const { deck } = this.props.navigation.state.params
@@ -14,13 +38,17 @@ export default class NewDeck extends Component {
                     <Text style={styles.subtitle}>{deck.questions.length} {deck.questions.length > 1 ? 'cards' : 'card'}</Text>
                 </View>
                 <View>
-                    <TouchableOpacity onPress={this.submit} style={styles.addCard} onPress={() => this.props.navigation.navigate('AddCard', { deck })}>
+                    <TouchableOpacity style={styles.addCard} onPress={() => this.props.navigation.navigate('AddCard', { deck })}>
                         <Text style={styles.addCardText}>Add Card</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={this.submit} style={styles.startQuiz} onPress={() => this.props.navigation.navigate('Quiz', { deck })}>
+                    <TouchableOpacity style={styles.startQuiz} onPress={() => this.props.navigation.navigate('Quiz', { deck })}>
                         <Text style={styles.startQuizText}>Start Quiz</Text>
                     </TouchableOpacity>
                 </View>
+
+                <TouchableOpacity onPress={this.submit} style={styles.deleteButton} onPress={this.confirmDelete}>
+                    <FontAwesome name='trash-o' size={30} color={red} />
+                </TouchableOpacity>
             </View>
         )
     }
@@ -64,5 +92,12 @@ const styles = StyleSheet.create({
     addCardText: {
         fontSize: 25,
         color: blue
+    },
+    deleteButton: {
+        alignSelf: 'flex-end'
     }
 })
+
+const mapDispatchToProps = dispatch => bindActionCreators(DeckActions, dispatch)
+
+export default connect(null, mapDispatchToProps)(DeckDetail)
