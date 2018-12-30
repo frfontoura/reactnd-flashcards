@@ -46,7 +46,7 @@ class DeckDetail extends Component {
                     </TouchableOpacity>
                 </View>
 
-                <TouchableOpacity onPress={this.submit} style={styles.deleteButton} onPress={this.confirmDelete}>
+                <TouchableOpacity style={styles.deleteButton} onPress={this.confirmDelete}>
                     <FontAwesome name='trash-o' size={30} color={red} />
                 </TouchableOpacity>
             </View>
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
         height: 50,
         marginTop: 15,
         borderColor: blue,
-        borderWidth: 2,
+        borderWidth: 1,
         alignItems: 'center',
         justifyContent: 'center'
     },
