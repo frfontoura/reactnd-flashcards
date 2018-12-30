@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native'
 
 import { red, gray, blue, green, white } from '../../utils/colors'
 import If from '../../utils/if'
+import { clearLocalNotification, setLocalNotification } from '../../utils/notifications'
 
 const INITIAL_STATE = { showAnswer: false, questionNumber: 0, correct: 0, answered: false, hasNext: true }
 
@@ -14,6 +15,8 @@ export default class Quiz extends Component {
     }
 
     componentDidMount() {
+        clearLocalNotification().then(setLocalNotification)
+
         const { deck } = this.props.navigation.state.params
         if (deck.questions.length === 0) {
             Alert.alert(
@@ -103,33 +106,31 @@ export default class Quiz extends Component {
                         </View>
                     </If>
 
-                    <View style={{ height: 60 }}>
-                        <View style={styles.navigationContainer}>
-                            <TouchableOpacity style={[styles.button, styles.restartButton]} onPress={this.restart}>
-                                <Text style={[styles.textCenter, { color: gray }]}>Restart</Text>
-                            </TouchableOpacity>
-
-                            {this.state.hasNext ?
-                                <TouchableOpacity style={[styles.button, styles.nextButton]} onPress={this.nextQuestion}>
-                                    <Text style={[styles.textCenter, { color: blue }]}>Next</Text>
-                                </TouchableOpacity>
-                                :
-                                <TouchableOpacity style={[styles.button, styles.restartButton]} onPress={() => this.props.navigation.navigate('DeckList')}>
-                                    <Text style={[styles.textCenter, { color: gray }]}>Back to Decks</Text>
-                                </TouchableOpacity>
-                            }
-                        </View>
-                    </View>
                 </If>
 
                 <If test={finished}>
                     <View style={{ flex: 1, justifyContent: 'center' }}>
                         <Text style={styles.finished}>{`You correctly answered ${this.state.correct} of ${deck.questions.length}`}</Text>
-                        <TouchableOpacity style={styles.showAnswerButton} onPress={() => this.props.navigation.navigate('DeckList')}>
-                            <Text style={styles.textCenter}>Back to Decks</Text>
-                        </TouchableOpacity>
                     </View>
                 </If>
+
+                <View style={{ height: 60 }}>
+                    <View style={styles.navigationContainer}>
+                        <TouchableOpacity style={[styles.button, styles.restartButton]} onPress={this.restart}>
+                            <Text style={[styles.textCenter, { color: gray }]}>Restart</Text>
+                        </TouchableOpacity>
+
+                        {this.state.hasNext ?
+                            <TouchableOpacity style={[styles.button, styles.nextButton]} onPress={this.nextQuestion}>
+                                <Text style={[styles.textCenter, { color: blue }]}>Next</Text>
+                            </TouchableOpacity>
+                            :
+                            <TouchableOpacity style={[styles.button, styles.restartButton]} onPress={() => this.props.navigation.navigate('DeckList')}>
+                                <Text style={[styles.textCenter, { color: gray }]}>Back to Decks</Text>
+                            </TouchableOpacity>
+                        }
+                    </View>
+                </View>
             </View>
         )
     }
